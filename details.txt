@@ -16,3 +16,69 @@ CREATE TABLE incidents (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+CREATE TABLE events (
+    id TEXT PRIMARY KEY,
+    incident_id TEXT REFERENCES incidents(id) ON DELETE SET NULL,
+    timestamp TIMESTAMPTZ NOT NULL,
+    event_type TEXT NOT NULL,
+    source TEXT NOT NULL,
+    username TEXT,
+    hostname TEXT,
+    source_ip INET,
+    destination_ip INET,
+    destination_port INTEGER,
+    process_name TEXT,
+    command_line TEXT,
+    severity TEXT,
+    detection_method TEXT,
+    mitre_technique TEXT,
+    raw_event JSONB,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE entities (
+    id TEXT PRIMARY KEY,
+    type TEXT NOT NULL,
+    name TEXT NOT NULL,
+    metadata JSONB DEFAULT '{}'::jsonb,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE incident_entities (
+    incident_id TEXT REFERENCES incidents(id) ON DELETE CASCADE,
+    entity_id TEXT REFERENCES entities(id) ON DELETE CASCADE,
+    PRIMARY KEY (incident_id, entity_id)
+);
+
+CREATE TABLE mitre_techniques (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    tactic TEXT,
+    description TEXT
+);
+
+CREATE TABLE incident_mitre (
+    incident_id TEXT REFERENCES incidents(id) ON DELETE CASCADE,
+    technique_id TEXT REFERENCES mitre_techniques(id),
+    confidence NUMERIC(5,2),
+    evidence_count INTEGER DEFAULT 0,
+    PRIMARY KEY (incident_id, technique_id)
+);
+
+CREATE TABLE investigation_notes (
+    id BIGSERIAL PRIMARY KEY,
+    incident_id TEXT REFERENCES incidents(id) ON DELETE CASCADE,
+    analyst TEXT NOT NULL,
+    note TEXT NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE audit_logs (
+    id BIGSERIAL PRIMARY KEY,
+    incident_id TEXT REFERENCES incidents(id) ON DELETE CASCADE,
+    actor TEXT NOT NULL,
+    action TEXT NOT NULL,
+    details JSONB DEFAULT '{}'::jsonb,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
