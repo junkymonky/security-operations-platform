@@ -5,7 +5,13 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "ml": "node scripts/ml.mjs dev",
+    "ml:setup": "node scripts/ml.mjs setup",
+    "ml:test": "node scripts/ml.mjs test",
+    "db:seed-mitre": "node scripts/seed-mitre.mjs",
+    "db:seed-demo": "node scripts/seed-soc-demo.mjs",
+    "study": "node scripts/ml.mjs study"
   },
   "dependencies": {
     "@base-ui/react": "^1.5.0",

@@ -1,0 +1,7 @@
+# pnpm 10+ reads these settings from this file (package.json "pnpm" fields are ignored).
+overrides:
+  hono: 4.12.25
+
+# msw is a dev-only mock server pulled in by the shadcn CLI; its postinstall is not needed.
+allowBuilds:
+  msw: false
